@@ -1,0 +1,161 @@
+body {
+  margin: 5%;
+  color: #2E3440;
+  background: #D8DEE9;
+
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  user-select: none;
+}
+
+body > header > h1 {
+  font-weight: bold;
+  font-size: 48px;
+
+  margin: 0;
+  margin-bottom: 5%;
+}
+
+body > footer {
+  text-align: center;
+}
+
+
+
+body > footer > button {
+  width: 190px;
+  height: 75px;
+
+  font-size: 25px;
+  font-weight: bold;
+
+  color: #4C566A;
+
+  background: #ECEFF4;
+  border: none;
+  outline: none;
+  border-radius: 32px;
+  box-shadow: 0px 16px 16px rgba(0, 0, 0, 0.1);
+  transition: 0.1s;
+}
+
+body > footer > button:active {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+
+body > main > section {
+  background: #ECEFF4;
+  box-shadow: 0px 16px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+
+  padding: 5%;
+
+  margin-bottom: 32px;
+}
+
+body > main > section > header {
+  text-align: left;
+}
+
+body > main > section > header > h1 {
+  font-weight: bold;
+  font-size: 32px;
+  line-height: 37px;
+
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+body > main > section > header > h2 {
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 21px;
+
+  margin-top: 0px;
+}
+
+body > main > section > .line {
+  height: 1px;
+  background: #4C566A;
+}
+
+
+
+body > main > section > main {
+  display: grid;
+
+  margin: 28px 0;
+  grid-row-gap: 24px;
+}
+
+body > main > section > main > p {
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 23px;
+
+  margin: 0;
+  margin-left: 14px;
+}
+
+body > main > section > footer {
+  text-align: center;
+}
+
+body > main > section > footer > button {
+  width: 125px;
+  height: 50px;
+
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+
+  color: #ECEFF4;
+
+  background: #4C566A;
+  border: none;
+  outline: none;
+  border-radius: 32px;
+  box-shadow: 0px 16px 16px rgba(0, 0, 0, 0.1);
+  transition: 0.1s;
+}
+
+body > main > section > footer > button:active {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+
+body > main > section > .times {
+  font-size: 20px;
+  margin: 24px;
+
+  display: grid;
+  justify-content: space-around; 
+}
+
+body > main > section > .times > input[type="time"] {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+body > main > section > .days {
+  font-size: 20px;
+  margin: 24px;
+
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-around; 
+}
+
+body > main > section > .days > span {
+  padding: 5px;
+  font-weight: lighter;
+}
+
+body > main > section > .days > span.selected {
+  font-weight: bold;
+}
