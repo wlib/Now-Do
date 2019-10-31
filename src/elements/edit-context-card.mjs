@@ -1,8 +1,11 @@
 import { store, newContext } from "../store.mjs"
 import { saveStore } from "../store.mjs"
+import buildContextList from "./build-context-list.mjs"
 
 export default context => {
+  let isNew = false
   if (!context) {
+    isNew = true
     context = newContext()
     store.push(context)
   }
@@ -11,17 +14,29 @@ export default context => {
 
   card.innerHTML = `
     <header>
-      <h1 contenteditable>${context.name}</h1>
+      <h1 contentEditable>${context.name}</h1>
+      <div style="color:red">⊗</div>
     </header>
 
     <div class="line"></div>
   `
 
+  const deleteButton = card.querySelector("header > div")
+
+  if (isNew) {
+    deleteButton.style.display = "none"
+  } else {
+    deleteButton.onclick = e => {
+      if (confirm(`Are you sure you want to delete ${context.name}?`)) {
+        store.splice(store.indexOf(context), 1)
+        saveStore()
+        buildContextList()
+      }
+    }
+  }
+
   const times = document.createElement("div")
   times.className = "times"
-
-  context.time.startTime = new Date(context.time.startTime)
-  context.time.endTime = new Date(context.time.endTime)
 
   const startTime = document.createElement("input")
   startTime.type = "time"

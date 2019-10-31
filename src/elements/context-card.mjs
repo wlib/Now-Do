@@ -7,29 +7,22 @@ import { store, saveStore } from "../store.mjs";
 export default context => {
   const card = document.createElement("section")
 
-  let timer
-  card.addEventListener("touchstart", e => {
-    timer = setTimeout(() => {
-      if (confirm(`Are you sure you want to delete ${context.name}?`)) {
-        store.splice(store.indexOf(context), 1)
-        saveStore()
-        buildContextList()
-      }
-    }, 3/4 *1000)
-  })
-  card.addEventListener("touchend", e => {
-    if (timer)
-      clearTimeout(timer)
-  })
-
   const header = document.createElement("header")
   header.innerHTML = `
-    <h1>${context.name}</h1>
+    <h1 contentEditable>${context.name}</h1>
+    <div>⋮</div>
     <h2>${contextDescription(context)}</h2>
   `
   card.appendChild(header)
 
-  header.onclick = e => {
+  const title = header.querySelector("h1")
+
+  title.onkeyup = e => {
+    context.name = title.innerText
+    saveStore()
+  }
+
+  header.querySelector("div").onclick = e => {
     const container = document.querySelector("body > main")
     container.innerHTML = ""
 
@@ -57,7 +50,7 @@ export default context => {
 
   main.onkeyup = e => {
     const tasks = [...main.children]
-      .map(p => p.innerText)
+      .map(p => p.innerText.trim())
       .filter(x => /.+/.test(x))
     context.tasks = tasks
     saveStore()
@@ -75,13 +68,13 @@ export default context => {
     newTask.innerHTML = "&nbsp;"
     main.appendChild(newTask)
 
-    const range = window.document.createRange();
-    range.setStart(newTask, 0);
-    range.setEnd(newTask, 0);
+    const range = window.document.createRange()
+    range.setStart(newTask, 0)
+    range.setEnd(newTask, 0)
 
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
   }
 
   return card

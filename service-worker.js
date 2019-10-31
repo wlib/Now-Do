@@ -1,4 +1,4 @@
-const cacheVerison = "0.0.0"
+const cacheVerison = "0.0.1"
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -27,14 +27,7 @@ if (location.hostname !== "localhost")
     event.respondWith(
       caches
         .match(event.request)
-        .then(response =>
-          response ||
-          fetch(event.request)
-            .then(response => {
-              cache.put(event.request, response.clone())
-              return response
-            })
-        )
+        .then(response => response || fetch(event.request))
     )
   )
 

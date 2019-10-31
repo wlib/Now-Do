@@ -57,10 +57,14 @@ body > main > section {
 }
 
 body > main > section > header {
-  text-align: left;
+  display: grid;
+  grid-template-areas: "title   edit"
+                       "details details";
 }
 
 body > main > section > header > h1 {
+  grid-area: title;
+
   font-weight: bold;
   font-size: 32px;
   line-height: 37px;
@@ -69,7 +73,19 @@ body > main > section > header > h1 {
   margin-bottom: 5px;
 }
 
+body > main > section > header > div {
+  grid-area: edit;
+
+  font-weight: bold;
+  font-size: 32px;
+  line-height: 37px;
+
+  justify-self: end;
+}
+
 body > main > section > header > h2 {
+  grid-area: details;
+
   font-weight: normal;
   font-size: 18px;
   line-height: 21px;

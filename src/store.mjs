@@ -11,9 +11,7 @@ export const newContext = () => ({
     lon: undefined
   },
   timeAndOrLocation: "time",
-  tasks: [
-    "New Task"
-  ]
+  tasks: []
 })
 
 const persistGet = (key, defaultValue) =>
@@ -23,6 +21,11 @@ const persistSet = (key, value) =>
   localStorage.setItem(key, JSON.stringify(value))
 
 export let store = persistGet("contexts", [ newContext() ])
+  .map(context => {
+    context.time.startTime = new Date(context.time.startTime)
+    context.time.endTime = new Date(context.time.endTime)
+    return context
+  })
 
 export const saveStore = () =>
   persistSet("contexts", store)

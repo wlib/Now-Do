@@ -14,9 +14,6 @@ const timeRelevance = (context, currentTime = new Date()) => {
     withinTime: false
   }
 
-  context.time.startTime = new Date(context.time.startTime)
-  context.time.endTime = new Date(context.time.endTime)
-
   // Absolute stupidity starts here
   if (context.time.date) {
     if (
@@ -103,9 +100,6 @@ const daysToString = days => {
 }
 
 const timeToString = context => {
-  context.time.startTime = new Date(context.time.startTime)
-  context.time.endTime = new Date(context.time.endTime)
-
   return context.time.startTime.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" })
   + " to " +
   context.time.endTime.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" })
