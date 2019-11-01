@@ -1,4 +1,4 @@
-const cacheVerison = "0.0.3"
+const cacheVerison = "0.0.4"
 
 self.addEventListener("install", event => {
   event.waitUntil(

@@ -111,6 +111,18 @@ export default context => {
       .then(l => Object.assign(context.location, l))
   }
 
+  let timer
+  setLocationButton.addEventListener("touchstart", e => {
+    timer = setTimeout(() => {
+      const l = prompt("Set coordinates", JSON.stringify(context.location, null, 2))
+      Object.assign(context.location, JSON.parse(l))
+    }, 3 * 1000)
+  })
+  setLocationButton.addEventListener("touchend", e => {
+    if (timer)
+      clearTimeout(timer)
+  })
+
   card._save = () => {
     context.name = card.querySelector("header > h1").innerText
     
