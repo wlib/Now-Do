@@ -144,7 +144,15 @@ body > main > section > footer > button:active {
 
 
 
-body > main > section > .times {
+body > main > section > select {
+  width: 100%;
+  font-size: 18px;
+  margin-top: 5%;
+  text-align: center;
+  background: #ECEFF4;
+}
+
+body > main > section > .time > .times {
   font-size: 20px;
   margin: 24px;
 
@@ -152,13 +160,13 @@ body > main > section > .times {
   justify-content: space-around; 
 }
 
-body > main > section > .times > input[type="time"] {
+body > main > section > .time > .times > input[type="time"] {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
 }
 
-body > main > section > .days {
+body > main > section > .time > .days {
   font-size: 20px;
   margin: 24px;
 
@@ -167,11 +175,36 @@ body > main > section > .days {
   justify-content: space-around; 
 }
 
-body > main > section > .days > span {
+body > main > section > .time > .days > span {
   padding: 5px;
   font-weight: lighter;
 }
 
-body > main > section > .days > span.selected {
+body > main > section > .time > .days > span.selected {
   font-weight: bold;
+}
+
+body > main > section > .location {
+  text-align: center;
+}
+
+body > main > section > .location > button {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  padding: 3%;
+  margin-top: 5%;
+
+  color: #ECEFF4;
+
+  background: #4C566A;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  box-shadow: 0px 16px 16px rgba(0, 0, 0, 0.1);
+  transition: 0.1s;
+}
+
+body > main > section > .location > button:active {
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
 }

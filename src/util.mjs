@@ -1,85 +1,57 @@
-const locationRelevance = (context, currentLocation) => {
-  const latDistance = context.location.lat - currentLocation.lat
-  const lonDistance = context.location.lon - currentLocation.lon
-  const distance = (latDistance ** 2 + lonDistance ** 2) ** (1 / 2)
+export const getLocation = () =>
+  new Promise((resolve, reject) =>
+    navigator.geolocation.getCurrentPosition(x => resolve({ lat: x.coords.latitude, lon: x.coords.longitude }), reject)
+  )
 
-  return Math.floor(context.location.radius / distance)
+const locationRelevance = (context, currentLocation) => {
+  const earthRadius = 6371000 // Meters
+  const latDistance = Math.PI / 180 * (context.location.lat - currentLocation.lat)
+  const lonDistance = Math.PI / 180 * (context.location.lon - currentLocation.lon)
+  const a = Math.sin(latDistance/2) * Math.sin(latDistance/2) +
+            Math.cos(Math.PI / 180 * currentLocation.lat) * Math.cos(Math.PI / 180 * context.location.lat) *
+            Math.sin(lonDistance/2) * Math.sin(lonDistance/2)
+  const distance = earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  return 100000 / distance
+}
+
+const daysAway = (currentDayIndex, targetDayIndex) => {
+  if (currentDayIndex <= targetDayIndex)
+    return targetDayIndex - currentDayIndex
+  else
+    return 7 - (currentDayIndex - targetDayIndex)
 }
 
 const timeRelevance = (context, currentTime = new Date()) => {
-  const relevance = {
-    beforeDay: false,
-    withinDay: false,
-    beforeTime: false,
-    withinTime: false
-  }
+  let closestDayDistance
+  if (context.time.days.length == 0)
+    closestDayDistance = 0
+  else
+    closestDayDistance = Math.min(
+      ...context.time.days
+        .map(i => daysAway(currentTime.getDay(), i))
+    )
 
-  // Absolute stupidity starts here
-  if (context.time.date) {
-    if (
-      context.time.date.getDate() == currentTime.getDate() &&
-      context.time.date.getMonth() == currentTime.getMonth()
-    ) {
-      relevance.withinDay = true
-      if (
-        context.time.startTime.getHours() > currentTime.getHours() ||
-          (context.time.startTime.getHours() == currentTime.getHours() &&
-          context.time.startTime.getMinutes() > currentTime.getMinutes())
-      ) {
-        relevance.beforeTime = true
-      } else if (
-        context.time.endTime.getHours() > currentTime.getHours() ||
-          (context.time.endTime.getHours() == currentTime.getHours() &&
-          context.time.endTime.getMinutes() > currentTime.getMinutes())
-      ) {
-        relevance.withinTime = true
-      }
-    } else if (
-      context.time.date.getDate() > currentTime.getDate() &&
-      context.time.date.getMonth() > currentTime.getMonth()
-    ) {
-      relevance.beforeDay = true
-    }
-  } else {
-    if (context.time.days.includes(currentTime.getDay()) || context.time.days.length == 0) {
-      relevance.withinDay = true
-      if (
-        context.time.startTime.getHours() > currentTime.getHours() ||
-          (context.time.startTime.getHours() == currentTime.getHours() &&
-          context.time.startTime.getMinutes() > currentTime.getMinutes())
-      ) {
-        relevance.beforeTime = true
-      } else if (
-        context.time.endTime.getHours() > currentTime.getHours() ||
-          (context.time.endTime.getHours() == currentTime.getHours() &&
-          context.time.endTime.getMinutes() > currentTime.getMinutes())
-      ) {
-        relevance.withinTime = true
-      }
-    }
-  }
+  const minutesDistanceToStart = closestDayDistance * 24 * 60 * 60 +
+    (currentTime.getHours() - context.time.startTime.getHours()) * 60 +
+    (currentTime.getMinutes() - context.time.startTime.getMinutes())
+  const minutesDistanceToEnd = closestDayDistance * 24 * 60 * 60 +
+    (currentTime.getHours() - context.time.endTime.getHours()) * 60 +
+    (currentTime.getMinutes() - context.time.endTime.getMinutes())
 
-  if (relevance.beforeDay) {
+  if (minutesDistanceToStart <= 0 && minutesDistanceToEnd >= 0)
+    return 10000
+  else if (minutesDistanceToStart > 0)
+    return 100 / minutesDistanceToStart
+  else if (minutesDistanceToEnd < 0)
     return 0
-  } else if (relevance.withinDay) {
-    if (relevance.beforeTime) {
-      return 1
-    } else if (relevance.withinTime) {
-      return 2
-    }
-  } else {
-    return 0
-  }
 }
 
 const contextRelevance = (context, currentLocation, currentTime) => {
-  if (context.timeAndOrLocation == "time")
+  if (context.useTime && !context.useLocation)
     return timeRelevance(context, currentTime)
-  if (context.timeAndOrLocation == "location")
+  if (!context.useTime && context.useLocation)
     return locationRelevance(context, currentLocation)
-  if (context.timeAndOrLocation == "and")
-    return timeRelevance(context, currentTime) * locationRelevance(context, currentLocation)
-  if (context.timeAndOrLocation == "or")
+  if (context.useTime && context.useLocation)
     return timeRelevance(context, currentTime) + locationRelevance(context, currentLocation)
   else
     return 0
@@ -93,6 +65,10 @@ export const sortContexts = (contexts, currentLocation, currentTime) =>
 const daysToString = days => {
   if (days.length == 0 || days.length == 7)
     return ""
+  else if (days.length == 2 && days.includes(0) && days.includes(6))
+    return " on Weekends"
+  else if (days.length == 5 && !days.includes(0) && !days.includes(6))
+    return " on Weekdays"
   else
     return " on " + days
       .map(i => ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][i])
@@ -106,14 +82,12 @@ const timeToString = context => {
 }
 
 export const contextDescription = context => {
-  if (context.timeAndOrLocation == "time")
+  if (context.useTime && !context.useLocation)
     return `${timeToString(context)}${daysToString(context.time.days)}`
-  if (context.timeAndOrLocation == "location")
+  if (!context.useTime && context.useLocation)
     return "At given location"
-  if (context.timeAndOrLocation == "and")
-    return `At given location from ${timeToString(context)}${daysToString(context.time.days)}}`
-  if (context.timeAndOrLocation == "or")
-    return `At given location or from ${timeToString(context)}${daysToString(context.time.days)}`
+  if (context.useTime && context.useLocation)
+    return `${timeToString(context)}${daysToString(context.time.days)} or at given location`
   else
-    return "Tap to add a time and/or location"
+    return "Not sorted by time or location"
 }
